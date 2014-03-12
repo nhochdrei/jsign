@@ -123,7 +123,7 @@ public class PESigner {
 
     /**
      * Enable or disable the replacement of the previous signatures (disabled by default).
-     * 
+     *
      * @since 2.0
      */
     public PESigner withSignaturesReplaced(boolean replace) {
@@ -136,6 +136,22 @@ public class PESigner {
      */
     public PESigner withTimestamping(boolean timestamping) {
         this.timestamping = timestamping;
+        return this;
+    }
+
+    /**
+     * Set the number of retries for timestamping.
+     */
+    public PESigner withTimestampingRetries(int timestampingRetries) {
+        this.timestampingRetries = timestampingRetries;
+        return this;
+    }
+
+    /**
+     * Set the number of seconds to wait between timestamping retries.
+     */
+    public PESigner withTimestampingRetryWait(int timestampingRetryWait) {
+        this.timestampingRetryWait = timestampingRetryWait;
         return this;
     }
 
@@ -160,7 +176,7 @@ public class PESigner {
     /**
      * Set the URL of the timestamping authority. RFC 3161 servers as used
      * for jar signing are not compatible with Authenticode signatures.
-     * 
+     *
      * @since 2.0
      */
     public PESigner withTimestampingAutority(String... url) {
@@ -204,7 +220,7 @@ public class PESigner {
 
     /**
      * Explicitly sets the signature algorithm to use.
-     * 
+     *
      * @since 2.0
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm) {
@@ -214,7 +230,7 @@ public class PESigner {
 
     /**
      * Explicitly sets the signature algorithm and provider to use.
-     * 
+     *
      * @since 2.0
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
@@ -223,7 +239,7 @@ public class PESigner {
 
     /**
      * Explicitly sets the signature algorithm and provider to use.
-     * 
+     *
      * @since 2.0
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
@@ -234,7 +250,7 @@ public class PESigner {
 
     /**
      * Set the signature provider to use.
-     * 
+     *
      * @since 2.0
      */
     public PESigner withSignatureProvider(Provider signatureProvider) {
@@ -260,7 +276,7 @@ public class PESigner {
                 certificateTable.write(0, 0);
             }
         }
-        
+
         // compute the signature
         CMSSignedData sigData = createSignature(file);
         
@@ -296,7 +312,7 @@ public class PESigner {
 
     private CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) throws CMSException {
         SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();
-        
+
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
         if (unsignedAttributes == null) {
             unsignedAttributes = new AttributeTable(new DERSet());
@@ -312,13 +328,13 @@ public class PESigner {
                 nestedSignatures.add(nestedSignature);
             }
             nestedSignatures.add(secondary.toASN1Structure());
-            
+
             ASN1EncodableVector attributes = unsignedAttributes.remove(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID).toASN1EncodableVector();
             attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, new DERSet(nestedSignatures)));
-            
+
             unsignedAttributes = new AttributeTable(attributes);
         }
-        
+
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));
     }
@@ -326,7 +342,7 @@ public class PESigner {
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         byte[] sha = file.computeDigest(digestAlgorithm);
         
-        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(algo.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
         SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(data, digestInfo);
