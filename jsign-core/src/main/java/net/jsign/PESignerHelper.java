@@ -54,7 +54,7 @@ import sun.security.pkcs11.SunPKCS11;
  *
  * @since 2.0
  */
-class PESignerHelper {
+public class PESignerHelper {
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
     public static final String PARAM_STORETYPE = "storetype";
@@ -107,6 +107,10 @@ class PESignerHelper {
     public PESignerHelper(Console console, String parameterName) {
         this.console = console;
         this.parameterName = parameterName;
+    }
+
+    public PESignerHelper(String keystoreName) {
+        this(null, keystoreName);
     }
 
     public PESignerHelper keystore(String keystore) {
