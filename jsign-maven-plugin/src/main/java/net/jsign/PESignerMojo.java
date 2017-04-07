@@ -61,6 +61,15 @@ public class PESignerMojo extends AbstractMojo {
     @Parameter(defaultValue = "JKS")
     private String storetype;
 
+    @Parameter
+    private String providerClassName;
+
+    @Parameter
+    private String providerArg;
+
+    @Parameter
+    private String providerName;
+
     /** The alias of the certificate in the keystore. Required if a keystore is specified. */
     @Parameter
     private String alias;
@@ -106,6 +115,9 @@ public class PESignerMojo extends AbstractMojo {
         helper.keystore(keystore);
         helper.storepass(storepass);
         helper.storetype(storetype);
+        helper.providerClass(providerClassName);
+        helper.providerArg(providerArg);
+        helper.providerName(providerName);
         helper.alias(alias);
         helper.certfile(certfile);
         helper.keyfile(keyfile);

@@ -34,7 +34,7 @@ public class PESignerMojoTest extends AbstractMojoTestCase {
             mojo.execute();
         } catch (MojoFailureException e) {
             // expected
-            assertEquals("keystore element, or keyfile and certfile elements must be set", e.getMessage());
+            assertEquals("keystore element, providerClass or keyfile and certfile elements must be set", e.getMessage());
         }
     }
 }

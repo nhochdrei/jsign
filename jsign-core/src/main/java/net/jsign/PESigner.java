@@ -193,22 +193,6 @@ public class PESigner {
     }
 
     /**
-     * Set the number of retries for timestamping.
-     */
-    public PESigner withTimestampingRetries(int timestampingRetries) {
-        this.timestampingRetries = timestampingRetries;
-        return this;
-    }
-
-    /**
-     * Set the number of seconds to wait between timestamping retries.
-     */
-    public PESigner withTimestampingRetryWait(int timestampingRetryWait) {
-        this.timestampingRetryWait = timestampingRetryWait;
-        return this;
-    }
-
-    /**
      * Set the digest algorithm to use (SHA-256 by default)
      */
     public PESigner withDigestAlgorithm(DigestAlgorithm algorithm) {
@@ -342,7 +326,7 @@ public class PESigner {
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         byte[] sha = file.computeDigest(digestAlgorithm);
         
-        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(algo.oid, DERNull.INSTANCE);
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
         SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(data, digestInfo);

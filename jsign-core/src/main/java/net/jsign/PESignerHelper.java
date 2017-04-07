@@ -32,6 +32,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.ProviderException;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -40,10 +41,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import sun.security.pkcs11.SunPKCS11;
+import org.bouncycastle.crypto.Signer;
 
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
+import sun.security.pkcs11.SunPKCS11;
 
 /**
  * Helper class to create PESigner instances with untyped parameters.
@@ -56,6 +58,9 @@ class PESignerHelper {
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
     public static final String PARAM_STORETYPE = "storetype";
+    public static final String PARAM_PROVIDERCLASSNAME = "providerClass";
+    public static final String PARAM_PROVIDERARG = "providerArg";
+    public static final String PARAM_PROVIDERNAME = "providerName";
     public static final String PARAM_ALIAS = "alias";
     public static final String PARAM_KEYPASS = "keypass";
     public static final String PARAM_KEYFILE = "keyfile";
@@ -80,6 +85,9 @@ class PESignerHelper {
     private File keystore;
     private String storepass;
     private String storetype;
+    private String providerClass;
+    private String providerArg;
+    private String providerName;
     private String alias;
     private String keypass;
     private File keyfile;
@@ -206,30 +214,48 @@ class PESignerHelper {
         return this;
     }
 
+    public PESignerHelper providerClass(String klass) {
+        this.providerClass = klass;
+        return this;
+    }
+
+    public PESignerHelper providerArg(String arg) {
+        this.providerArg = arg;
+        return this;
+    }
+
+    public PESignerHelper providerName(String name) {
+    	this.providerName = name;
+    	return this;
+    }
+
     public PESignerHelper param(String key, String value) {
         if (value == null) {
             return this;
         }
-        
+
         switch (key) {
-            case PARAM_KEYSTORE:   return keystore(value);
-            case PARAM_STOREPASS:  return storepass(value);
-            case PARAM_STORETYPE:  return storetype(value);
-            case PARAM_ALIAS:      return alias(value);
-            case PARAM_KEYPASS:    return keypass(value);
-            case PARAM_KEYFILE:    return keyfile(value);
-            case PARAM_CERTFILE:   return certfile(value);
-            case PARAM_ALG:        return alg(value);
-            case PARAM_TSAURL:     return tsaurl(value);
-            case PARAM_TSMODE:     return tsmode(value);
-            case PARAM_TSRETRIES:  return tsretries(Integer.parseInt(value));
-            case PARAM_TSRETRY_WAIT: return tsretrywait(Integer.parseInt(value));
-            case PARAM_NAME:       return name(value);
-            case PARAM_URL:        return url(value);
-            case PARAM_PROXY_URL:  return proxyUrl(value);
-            case PARAM_PROXY_USER: return proxyUser(value);
-            case PARAM_PROXY_PASS: return proxyPass(value);
-            case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
+            case PARAM_KEYSTORE:          return keystore(value);
+            case PARAM_STOREPASS:         return storepass(value);
+            case PARAM_STORETYPE:         return storetype(value);
+            case PARAM_PROVIDERCLASSNAME: return providerClass(value);
+            case PARAM_PROVIDERARG:       return providerArg(value);
+            case PARAM_PROVIDERNAME:      return providerName(value);
+            case PARAM_ALIAS:             return alias(value);
+            case PARAM_KEYPASS:           return keypass(value);
+            case PARAM_KEYFILE:           return keyfile(value);
+            case PARAM_CERTFILE:          return certfile(value);
+            case PARAM_ALG:               return alg(value);
+            case PARAM_TSAURL:            return tsaurl(value);
+            case PARAM_TSMODE:            return tsmode(value);
+            case PARAM_TSRETRIES:         return tsretries(Integer.parseInt(value));
+            case PARAM_TSRETRY_WAIT:      return tsretrywait(Integer.parseInt(value));
+            case PARAM_NAME:              return name(value);
+            case PARAM_URL:               return url(value);
+            case PARAM_PROXY_URL:         return proxyUrl(value);
+            case PARAM_PROXY_USER:        return proxyUser(value);
+            case PARAM_PROXY_PASS:        return proxyPass(value);
+            case PARAM_REPLACE:           return replace("true".equalsIgnoreCase(value));
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -244,17 +270,41 @@ class PESignerHelper {
         Certificate[] chain;
 
         // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null) {
-            throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
+        if (providerClass == null && keystore == null && keystore == null && keyfile == null && certfile == null) {
+            throw new SignerException("keystore " + parameterName + ", providerClass or keyfile and certfile " + parameterName + "s must be set");
         }
         if (keystore != null && (keyfile != null || certfile != null)) {
             throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile or certfile");
         }
-        
+
+        if (providerClass != null) {
+            try {
+                Class<? extends Provider> providerClassObj = (Class<? extends Provider>) Class.forName(providerClass);
+                Provider provider;
+                if (providerArg == null) {
+                    provider = providerClassObj.newInstance();
+                } else {
+                    provider = providerClassObj.getConstructor(String.class).newInstance(providerArg);
+                }
+                Security.addProvider(provider);
+            } catch (Exception e) {
+                throw new SignerException("provider '" + providerClass + "' could not be created", e);
+            }
+        }
+
         Provider provider = null;
-        if ("PKCS11".equals(storetype)) {
+
+	    if (providerName != null) {
+		    try {
+			    provider = Security.getProvider(providerName);
+		    } catch (ProviderException e) {
+			    throw new SignerException("no provider '" + providerName + "' for storetype '" + storetype + "'", e);
+		    }
+	    }
+
+	    if (provider == null && "PKCS11".equals(storetype)) {
             // the keystore parameter is either the provider name or the SunPKCS11 configuration file
-            if (keystore != null && keystore.exists()) {
+	        if (keystore != null && keystore.exists()) {
                 provider = new SunPKCS11(keystore.getName());
             } else if (keystore != null && keystore.getName().startsWith("SunPKCS11-")) {
                 provider = Security.getProvider(keystore.getPath());
@@ -266,7 +316,7 @@ class PESignerHelper {
             }
         }
 
-        if (keystore != null) {
+        if (keystore != null || providerClass != null) {
             KeyStore ks = KeyStoreUtils.load(keystore, storetype, storepass, provider);
 
             if (alias == null) {
@@ -346,7 +396,7 @@ class PESignerHelper {
 
     public void sign(File file) throws SignerException {
         PESigner signer = build();
-        
+
         if (file == null) {
             throw new SignerException("file must be set");
         }
