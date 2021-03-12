@@ -485,12 +485,12 @@ public class PESignerTest {
 
     @Test
     public void testAuthenticodeTimestampingFailover() throws Exception {
-        testTimestampingFailover(TimestampingMode.AUTHENTICODE, "http://timestamp.sectigo.com/authenticode");
+        testTimestampingFailover(TimestampingMode.AUTHENTICODE, "http://timestamp.sectigo.com/");
     }
 
     @Test
     public void testRFC3161TimestampingFailover() throws Exception {
-        testTimestampingFailover(TimestampingMode.RFC3161, "http://timestamp.sectigo.com/rfc3161");
+        testTimestampingFailover(TimestampingMode.RFC3161, "http://timestamp.sectigo.com/");
     }
 
     public void testTimestampingFailover(TimestampingMode mode, String validURL) throws Exception {
@@ -502,7 +502,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingRetryWait(1);
