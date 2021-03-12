@@ -70,7 +70,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Set the program name embedded in the signature.
-     * 
+     *
      * @param programName the program name
      * @return the current signer
      */
@@ -80,7 +80,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Set the program URL embedded in the signature.
-     * 
+     *
      * @param programURL the program URL
      * @return the current signer
      */
@@ -90,7 +90,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Enable or disable the replacement of the previous signatures (disabled by default).
-     * 
+     *
      * @param replace <code>true</code> if the new signature should replace the existing ones, <code>false</code> to append it
      * @return the current signer
      * @since 2.0
@@ -101,12 +101,28 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Enable or disable the timestamping (enabled by default).
-     * 
+     *
      * @param timestamping <code>true</code> to enable timestamping, <code>false</code> to disable it
      * @return the current signer
      */
     public PESigner withTimestamping(boolean timestamping) {
         return (PESigner) super.withTimestamping(timestamping);
+    }
+
+    /**
+     * Set the number of retries for timestamping.
+     */
+    public PESigner withTimestampingRetries(int timestampingRetries) {
+        this.timestampingRetries = timestampingRetries;
+        return this;
+    }
+
+    /**
+     * Set the number of seconds to wait between timestamping retries.
+     */
+    public PESigner withTimestampingRetryWait(int timestampingRetryWait) {
+        this.timestampingRetryWait = timestampingRetryWait;
+        return this;
     }
 
     /**
@@ -123,7 +139,7 @@ public class PESigner extends AuthenticodeSigner {
     /**
      * Set the URL of the timestamping authority. Both RFC 3161 (as used for jar signing)
      * and Authenticode timestamping services are supported.
-     * 
+     *
      * @param url the URL of the timestamping authority
      * @return the current signer
      * @deprecated Use {@link #withTimestampingAuthority(String)} instead
@@ -137,7 +153,7 @@ public class PESigner extends AuthenticodeSigner {
      * and Authenticode timestamping services are supported.
      *
      * @param urls the URLs of the timestamping authorities
-     * @return the current signer
+     *@return the current signer
      * @since 2.0
      * @deprecated Use {@link #withTimestampingAuthority(String...)} instead
      */
@@ -148,7 +164,7 @@ public class PESigner extends AuthenticodeSigner {
     /**
      * Set the URL of the timestamping authority. Both RFC 3161 (as used for jar signing)
      * and Authenticode timestamping services are supported.
-     * 
+     *
      * @param url the URL of the timestamping authority
      * @return the current signer
      * @since 2.1
@@ -160,7 +176,7 @@ public class PESigner extends AuthenticodeSigner {
     /**
      * Set the URLs of the timestamping authorities. Both RFC 3161 (as used for jar signing)
      * and Authenticode timestamping services are supported.
-     * 
+     *
      * @param urls the URLs of the timestamping authorities
      * @return the current signer
      * @since 2.1
@@ -171,7 +187,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Set the Timestamper implementation.
-     * 
+     *
      * @param timestamper the timestamper implementation to use
      * @return the current signer
      */
@@ -180,28 +196,8 @@ public class PESigner extends AuthenticodeSigner {
     }
 
     /**
-     * Set the number of retries for timestamping.
-     * 
-     * @param timestampingRetries the number of retries
-     * @return the current signer
-     */
-    public PESigner withTimestampingRetries(int timestampingRetries) {
-        return (PESigner) super.withTimestampingRetries(timestampingRetries);
-    }
-
-    /**
-     * Set the number of seconds to wait between timestamping retries.
-     * 
-     * @param timestampingRetryWait the wait time between retries (in seconds)
-     * @return the current signer
-     */
-    public PESigner withTimestampingRetryWait(int timestampingRetryWait) {
-        return (PESigner) super.withTimestampingRetryWait(timestampingRetryWait);
-    }
-
-    /**
      * Set the digest algorithm to use (SHA-256 by default)
-     * 
+     *
      * @param algorithm the digest algorithm
      * @return the current signer
      */
@@ -211,7 +207,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Explicitly sets the signature algorithm to use.
-     * 
+     *
      * @param signatureAlgorithm the signature algorithm
      * @return the current signer
      * @since 2.0
@@ -222,7 +218,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Explicitly sets the signature algorithm and provider to use.
-     * 
+     *
      * @param signatureAlgorithm the signature algorithm
      * @param signatureProvider the security provider for the specified algorithm
      * @return the current signer
@@ -234,7 +230,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Explicitly sets the signature algorithm and provider to use.
-     * 
+     *
      * @param signatureAlgorithm the signature algorithm
      * @param signatureProvider the security provider for the specified algorithm
      * @return the current signer
@@ -246,7 +242,7 @@ public class PESigner extends AuthenticodeSigner {
 
     /**
      * Set the signature provider to use.
-     * 
+     *
      * @param signatureProvider the security provider for the signature algorithm
      * @return the current signer
      * @since 2.0
