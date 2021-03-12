@@ -31,7 +31,7 @@ import net.jsign.timestamp.TimestampingMode;
 
 /**
  * Sign a portable executable file. Timestamping is enabled by default
- * and relies on the Comodo server (http://timestamp.comodoca.com/authenticode).
+ * and relies on the Comodo server (http://timestamp.sectigo.com/authenticode).
  * 
  * @see <a href="http://download.microsoft.com/download/9/c/5/9c5b2167-8017-4bae-9fde-d599bac8184a/Authenticode_PE.docx">Windows Authenticode Portable Executable Signature Format</a>
  * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb931395%28v=vs.85%29.aspx?ppud=4">Time Stamping Authenticode Signatures</a>
@@ -110,22 +110,6 @@ public class PESigner extends AuthenticodeSigner {
     }
 
     /**
-     * Set the number of retries for timestamping.
-     */
-    public PESigner withTimestampingRetries(int timestampingRetries) {
-        this.timestampingRetries = timestampingRetries;
-        return this;
-    }
-
-    /**
-     * Set the number of seconds to wait between timestamping retries.
-     */
-    public PESigner withTimestampingRetryWait(int timestampingRetryWait) {
-        this.timestampingRetryWait = timestampingRetryWait;
-        return this;
-    }
-
-    /**
      * RFC3161 or Authenticode (Authenticode by default).
      * 
      * @param tsmode the timestamping mode
@@ -193,6 +177,26 @@ public class PESigner extends AuthenticodeSigner {
      */
     public PESigner withTimestamper(Timestamper timestamper) {
         return (PESigner) super.withTimestamper(timestamper);
+    }
+
+    /**
+     * Set the number of retries for timestamping.
+     *
+     * @param timestampingRetries the number of retries
+     * @return the current signer
+     */
+    public PESigner withTimestampingRetries(int timestampingRetries) {
+        return (PESigner) super.withTimestampingRetries(timestampingRetries);
+    }
+
+    /**
+     * Set the number of seconds to wait between timestamping retries.
+     *
+     * @param timestampingRetryWait the wait time between retries (in seconds)
+     * @return the current signer
+     */
+    public PESigner withTimestampingRetryWait(int timestampingRetryWait) {
+        return (PESigner) super.withTimestampingRetryWait(timestampingRetryWait);
     }
 
     /**

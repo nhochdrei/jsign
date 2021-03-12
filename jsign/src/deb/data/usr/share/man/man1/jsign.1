@@ -67,7 +67,7 @@ option is used in combination with the keyfile option.
 The URL of the timestamping authority, either RFC 3161 or Authenticode services.
 You can use the COMODO or the Verisign services:
 .br
-- http://timestamp.comodoca.com/authenticode
+- http://timestamp.sectigo.com/authenticode
 .br
 - http://timestamp.verisign.com/scripts/timstamp.dll
 
@@ -121,7 +121,7 @@ Print the help
 .TP
 Signing with a PKCS#12 keystore and timestamping:
 
-jsign --keystore keystore.p12 --alias test --storepass password --tsaurl http://timestamp.comodoca.com/authenticode application.exe
+jsign --keystore keystore.p12 --alias test --storepass password --tsaurl http://timestamp.sectigo.com/authenticode application.exe
 
 
 .TP

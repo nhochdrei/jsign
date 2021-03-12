@@ -485,12 +485,12 @@ public class PESignerTest {
 
     @Test
     public void testAuthenticodeTimestampingFailover() throws Exception {
-        testTimestampingFailover(TimestampingMode.AUTHENTICODE, "http://timestamp.comodoca.com/authenticode");
+        testTimestampingFailover(TimestampingMode.AUTHENTICODE, "http://timestamp.sectigo.com/authenticode");
     }
 
     @Test
     public void testRFC3161TimestampingFailover() throws Exception {
-        testTimestampingFailover(TimestampingMode.RFC3161, "http://timestamp.comodoca.com/rfc3161");
+        testTimestampingFailover(TimestampingMode.RFC3161, "http://timestamp.sectigo.com/rfc3161");
     }
 
     public void testTimestampingFailover(TimestampingMode mode, String validURL) throws Exception {

@@ -45,7 +45,6 @@ import java.util.Collections;
 import java.util.List;
 
 import net.jsign.timestamp.TimestampingMode;
-import sun.security.pkcs11.SunPKCS11;
 
 /**
  * Helper class to create AuthenticodeSigner instances with untyped parameters.
@@ -109,10 +108,6 @@ public class SignerHelper {
     public SignerHelper(Console console, String parameterName) {
         this.console = console;
         this.parameterName = parameterName;
-    }
-
-    public PESignerHelper(String keystoreName) {
-        this(null, keystoreName);
     }
 
     public SignerHelper keystore(String keystore) {
@@ -220,17 +215,17 @@ public class SignerHelper {
         return this;
     }
 
-    public PESignerHelper providerClass(String klass) {
+    public SignerHelper providerClass(String klass) {
         this.providerClass = klass;
         return this;
     }
 
-    public PESignerHelper providerArg(String arg) {
+    public SignerHelper providerArg(String arg) {
         this.providerArg = arg;
         return this;
     }
 
-    public PESignerHelper providerName(String name) {
+    public SignerHelper providerName(String name) {
     	this.providerName = name;
     	return this;
     }
